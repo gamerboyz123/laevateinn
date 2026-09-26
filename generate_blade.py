@@ -26,7 +26,11 @@ class Mesh:
         self.v, self.vt, self.f = [], [], []
 
     def vert(self, p):
-        self.v.append((float(p[0]), float(p[1]), float(p[2])))
+        x, y, z = float(p[0]), float(p[1]), float(p[2])
+        # 180 deg about X (y,z -> -y,-z): a PROPER rotation (keeps winding/shading),
+        # baked in so the blade points UP in the melee2 hand at AngleOffset (0,0,0).
+        # (Established: (0,0,0) alone points model +Z, i.e. the blade, DOWN in-hand.)
+        self.v.append((x, -y, -z))
         return len(self.v)
 
     def uv(self, u, w):
