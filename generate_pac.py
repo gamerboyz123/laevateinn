@@ -18,6 +18,11 @@ WEAPON_CLASS = "csgo_bayonet_bluesteel"
 # melee2 = two-handed blade hold in front + a swing on primary attack.
 HOLDTYPE = "melee2"
 
+# Music that plays while the blade is out. Drop your track at audio/theme.mp3 in the
+# repo (any direct .mp3/.wav URL works). Loops, gated by the same weapon as the blade.
+MUSIC_URL = f"{HOST_BASE}/audio/theme.mp3"
+MUSIC_VOLUME = 0.2
+
 # Bump when the OBJ geometry changes so GitHub's CDN / PAC can't serve stale meshes.
 ASSET_VERSION = 3
 
@@ -56,6 +61,7 @@ UIDS = {
     "molten": "d29f118b6c4d73091825b8df3c6e94a7821dab5593be46cf12f8d73ea5c69a48",
     "edge":  "f6ab239c7d5e84102936c9ef4d7fa5b8932ebc6604cf57da23f9e84fb6d7ae05",
     "anim":  "a70bc34ad8e6f5192047daf0b36e94b7043cd5e593ae46bf02e7d63ea5c7bf16",
+    "sound": "b81cd45be9f70620158cdb01c47f05c8154de6f6a4bf57c013f8e74fb6d8bf27",
 }
 # Distinct UIDs for the custom-texture build so both can coexist without clashing.
 UIDS_CUSTOM = {k: ("c" + v[1:]) for k, v in UIDS.items()}
@@ -106,6 +112,34 @@ def model_part(key, obj, material, color, fullbright, doubleface, draw, indent, 
 {t}}},"""
 
 
+def sound_part(indent, uids):
+    t = "\t" * indent
+    return f"""{t}["children"] = {{
+{t}}},
+{t}["self"] = {{
+{t}\t["Path"] = "{MUSIC_URL}",
+{t}\t["UniqueID"] = "{uids['sound']}",
+{t}\t["Pitch"] = 1,
+{t}\t["Name"] = "laevateinn theme",
+{t}\t["PlayOnFootstep"] = false,
+{t}\t["Radius"] = 600,
+{t}\t["DrawOrder"] = 0,
+{t}\t["PlayCount"] = 0,
+{t}\t["Bone"] = "head",
+{t}\t["StopOnHide"] = true,
+{t}\t["PauseOnHide"] = false,
+{t}\t["Doppler"] = false,
+{t}\t["Volume"] = {MUSIC_VOLUME},
+{t}\t["Position"] = Vector(0, 0, 0),
+{t}\t["Overlapping"] = false,
+{t}\t["EditorExpand"] = false,
+{t}\t["Hide"] = false,
+{t}\t["PositionOffset"] = Vector(0, 0, 0),
+{t}\t["ClassName"] = "sound2",
+{t}\t["Angles"] = Angle(0, 0, 0),
+{t}}},"""
+
+
 def anim_part(indent, uids):
     t = "\t" * indent
     return f"""{t}["children"] = {{
@@ -143,6 +177,7 @@ def build(use_url):
         body = model_part(key, obj, material, color, fb, df, draw, 5, uids)
         children.append(f"\t\t\t\t[{idx}] = {{\n{body}\n\t\t\t\t}},")
     children.append(f"\t\t\t\t[{len(PIECES) + 1}] = {{\n{anim_part(5, uids)}\n\t\t\t\t}},")
+    children.append(f"\t\t\t\t[{len(PIECES) + 2}] = {{\n{sound_part(5, uids)}\n\t\t\t\t}},")
     kids = "\n".join(children)
     return f"""[1] = {{
 \t["children"] = {{
