@@ -30,7 +30,7 @@ SWING_URL = f"{HOST_BASE}/animations/swing.json"
 SWING_WINDOW = 0.55
 
 # Bump when the OBJ geometry changes so GitHub's CDN / PAC can't serve stale meshes.
-ASSET_VERSION = 8
+ASSET_VERSION = 9
 
 # The 180 flip is now baked into the model geometry (see generate_blade.py), so the
 # blade points UP with a clean AngleOffset. Fine-tune tilt here if needed.
@@ -178,6 +178,11 @@ def swing_event_part(indent, uids):
 
     try_stop_gesture=1 kills the weapon's built-in swing so only OUR animation plays.
     The custom_animation is a 'gesture' - it fires once per attack then stops.
+
+    StopOnHide MUST be false: a gesture already stops itself after one play, and if
+    StopOnHide were true, hiding the part (when the attack window ends) would call
+    ResetEntityBoneMatrix on the WHOLE player, snapping every bone-attached PAC part
+    (the blade included) back to default - i.e. "cancelling the entire pac".
     """
     t = "\t" * indent
     ct = "\t" * (indent + 2)
@@ -194,7 +199,7 @@ def swing_event_part(indent, uids):
 {ct}\t["Rate"] = 1,
 {ct}\t["BonePower"] = 1,
 {ct}\t["Offset"] = 0,
-{ct}\t["StopOnHide"] = true,
+{ct}\t["StopOnHide"] = false,
 {ct}\t["StopOtherAnimations"] = false,
 {ct}\t["Hide"] = false,
 {ct}\t["EditorExpand"] = false,
