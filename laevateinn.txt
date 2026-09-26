@@ -28,7 +28,7 @@
 						["EditorExpand"] = false,
 						["Size"] = 0.95,
 						["Translucent"] = false,
-						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_hilt.obj",
+						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_hilt.obj?v=2",
 					},
 				},
 				[2] = {
@@ -57,7 +57,7 @@
 						["EditorExpand"] = false,
 						["Size"] = 0.95,
 						["Translucent"] = false,
-						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_base.obj",
+						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_base.obj?v=2",
 					},
 				},
 				[3] = {
@@ -86,7 +86,7 @@
 						["EditorExpand"] = false,
 						["Size"] = 0.95,
 						["Translucent"] = false,
-						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_blade.obj",
+						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_blade.obj?v=2",
 					},
 				},
 				[4] = {
@@ -115,7 +115,7 @@
 						["EditorExpand"] = false,
 						["Size"] = 0.95,
 						["Translucent"] = false,
-						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_glow.obj",
+						["Model"] = "https://raw.githubusercontent.com/gamerboyz123/laevateinn/main/obj/laev_glow.obj?v=2",
 					},
 				},
 				[5] = {
