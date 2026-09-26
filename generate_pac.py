@@ -24,13 +24,13 @@ MUSIC_URL = f"{HOST_BASE}/audio/theme.mp3"
 MUSIC_VOLUME = 0.2
 
 # Bump when the OBJ geometry changes so GitHub's CDN / PAC can't serve stale meshes.
-ASSET_VERSION = 5
+ASSET_VERSION = 6
 
-# Grip-centred model. ANGLE_OFFSET is (pitch, yaw, roll). Screenshot at pitch 180
-# showed the blade pointing DOWN through the legs, so 0 points it UP/away (correct).
+# Grip-centred model. ANGLE_OFFSET is (pitch, yaw, roll). Confirmed from a screenshot
+# that (0,0,0) points the blade DOWN through the legs, so pitch 180 flips it UP.
 SIZE = 0.95
 POSITION = (0.0, 0.0, 0.0)
-ANGLE_OFFSET = (0.0, 0.0, 0.0)
+ANGLE_OFFSET = (180.0, 0.0, 0.0)
 
 # --- Materials -----------------------------------------------------------------
 # ENGINE build: built-in HL2 materials (load reliably - the wood pole proves HL2
