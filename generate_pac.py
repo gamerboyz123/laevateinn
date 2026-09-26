@@ -23,8 +23,14 @@ HOLDTYPE = "melee2"
 MUSIC_URL = f"{HOST_BASE}/audio/theme.mp3"
 MUSIC_VOLUME = 0.2
 
+# Custom attack swing: a hosted JSON of keyframed bone poses (see generate_animation.py).
+# Triggered by the native "attack primary" animation event whenever you swing.
+SWING_URL = f"{HOST_BASE}/animations/swing.json"
+# How long (s) the event stays "true" after an attack, i.e. the swing's visible window.
+SWING_WINDOW = 0.55
+
 # Bump when the OBJ geometry changes so GitHub's CDN / PAC can't serve stale meshes.
-ASSET_VERSION = 7
+ASSET_VERSION = 8
 
 # The 180 flip is now baked into the model geometry (see generate_blade.py), so the
 # blade points UP with a clean AngleOffset. Fine-tune tilt here if needed.
@@ -63,6 +69,8 @@ UIDS = {
     "edge":  "f6ab239c7d5e84102936c9ef4d7fa5b8932ebc6604cf57da23f9e84fb6d7ae05",
     "anim":  "a70bc34ad8e6f5192047daf0b36e94b7043cd5e593ae46bf02e7d63ea5c7bf16",
     "sound": "b81cd45be9f70620158cdb01c47f05c8154de6f6a4bf57c013f8e74fb6d8bf27",
+    "atkevt": "c92de56cf0a81731269edb12d58f16d9265ef7a7a5cf68d124f9e85fb6e9cf38",
+    "swing": "da3ef67df1b92842370fec23e69f27ea376fa8b8b6df79e235faf96fc7fadf49",
 }
 # Distinct UIDs for the custom-texture build so both can coexist without clashing.
 UIDS_CUSTOM = {k: ("c" + v[1:]) for k, v in UIDS.items()}
@@ -165,6 +173,54 @@ def anim_part(indent, uids):
 {t}}},"""
 
 
+def swing_event_part(indent, uids):
+    """An animation_event('attack primary') event whose child is the custom swing.
+
+    try_stop_gesture=1 kills the weapon's built-in swing so only OUR animation plays.
+    The custom_animation is a 'gesture' - it fires once per attack then stops.
+    """
+    t = "\t" * indent
+    ct = "\t" * (indent + 2)
+    swing_anim = f"""{ct}["children"] = {{
+{ct}}},
+{ct}["self"] = {{
+{ct}\t["UniqueID"] = "{uids['swing']}",
+{ct}\t["Name"] = "laevateinn slash",
+{ct}\t["ClassName"] = "custom_animation",
+{ct}\t["URL"] = "{SWING_URL}?v={ASSET_VERSION}",
+{ct}\t["Data"] = "",
+{ct}\t["AnimationType"] = "gesture",
+{ct}\t["Interpolation"] = "cosine",
+{ct}\t["Rate"] = 1,
+{ct}\t["BonePower"] = 1,
+{ct}\t["Offset"] = 0,
+{ct}\t["StopOnHide"] = true,
+{ct}\t["StopOtherAnimations"] = false,
+{ct}\t["Hide"] = false,
+{ct}\t["EditorExpand"] = false,
+{ct}}},"""
+    return f"""{t}["children"] = {{
+{t}\t[1] = {{
+{swing_anim}
+{t}\t}},
+{t}}},
+{t}["self"] = {{
+{t}\t["AffectChildrenOnly"] = false,
+{t}\t["DrawOrder"] = 0,
+{t}\t["Name"] = "on attack swing",
+{t}\t["Event"] = "animation_event",
+{t}\t["Hide"] = false,
+{t}\t["RootOwner"] = true,
+{t}\t["EditorExpand"] = true,
+{t}\t["ClassName"] = "event",
+{t}\t["Arguments"] = "attack primary@@{SWING_WINDOW}@@1",
+{t}\t["Invert"] = false,
+{t}\t["Operator"] = "find simple",
+{t}\t["UniqueID"] = "{uids['atkevt']}",
+{t}\t["ZeroEyePitch"] = false,
+{t}}},"""
+
+
 def build(use_url):
     uids = UIDS_CUSTOM if use_url else UIDS
     group_name = "laevateinn (custom-tex TEST)" if use_url else "laevateinn stage 4"
@@ -179,6 +235,7 @@ def build(use_url):
         children.append(f"\t\t\t\t[{idx}] = {{\n{body}\n\t\t\t\t}},")
     children.append(f"\t\t\t\t[{len(PIECES) + 1}] = {{\n{anim_part(5, uids)}\n\t\t\t\t}},")
     children.append(f"\t\t\t\t[{len(PIECES) + 2}] = {{\n{sound_part(5, uids)}\n\t\t\t\t}},")
+    children.append(f"\t\t\t\t[{len(PIECES) + 3}] = {{\n{swing_event_part(5, uids)}\n\t\t\t\t}},")
     kids = "\n".join(children)
     return f"""[1] = {{
 \t["children"] = {{
